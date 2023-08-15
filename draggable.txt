@@ -1,0 +1,35 @@
+                   // import Draggable, {DraggableCore, DraggableData} from "react-draggable";
+ 
+                   
+                   
+                      // const dragEvent = {
+  //   onDrag: (e: any, data: any) => {
+  //     console.log(e, data)
+  //   },
+  //   onStart: (e: any) => {
+  //     setActiveDrags(activeDrags + 1);
+  //     e.target.style.zIndex = "99";
+  //   },
+  //   onStop: (e: any) => {
+  //     setActiveDrags(activeDrags - 1);
+  //     e.target.style.zIndex = "0";
+  //   },
+  //   onDropAreaMouseEnter: (e: any) => {
+  //     if (activeDrags) {
+  //       e.target.classList.add('hovered');
+  //     }
+  //   }
+  // }
+  // const dragHandlers = {onStart: dragEvent.onStart, onStop: dragEvent.onStop};
+                    
+                      <Draggable
+                        bounds="parent"
+                        axis="y"
+                        grid={[25, 25]}
+                        scale={1}
+                        onDrag={dragEvent.onDrag}
+                        {...dragHandlers}
+                        >
+                            ....
+                            onMouseEnter={dragEvent.onDropAreaMouseEnter}
+                        </Draggable>

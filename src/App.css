@@ -56,3 +56,29 @@
     transform: rotate(360deg);
   }
 }
+
+.rs-sidenav-item {
+  padding: 0 !important;
+}
+
+.rs-nav-vertical {
+  z-index: 1 !important;
+}
+
+.grid-row-testing {
+  display: grid;
+  grid-template-columns: 5rem 1rem;
+  grid-gap: .1rem;
+  grid-auto-flow: row;
+  z-index: 2 !important;
+}
+
+.rs-sidenav-collapse-out .grid-row-testing img {
+  margin-left: 10%;
+  width: 45px !important;
+  height: 45px !important;
+}
+
+img {
+  border-radius: 25px !important;
+}

@@ -2,7 +2,11 @@
   "name": "better-twitch-sidebar",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3000/",
   "dependencies": {
+    "@dnd-kit/core": "^6.0.8",
+    "@dnd-kit/modifiers": "^6.0.1",
+    "@dnd-kit/sortable": "^7.0.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -13,6 +17,7 @@
     "axios": "^0.24.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "react-scripts": "5.0.1",
     "rsuite": "^5.37.4",
     "typescript": "^4.9.5",
@@ -29,6 +34,15 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "browser": {
+    "crypto": false,
+    "fs": false,
+    "path": false,
+    "os": false,
+    "net": false,
+    "stream": false,
+    "tls": false
   },
   "browserslist": {
     "production": [
