@@ -1,6 +1,6 @@
 export class Channel {
-    position?: Number
+    position?: string
     channel_id?: Number
     channel_name?: String
-    channel_profile_image?: String
+    channel_profile_image?: string
 }

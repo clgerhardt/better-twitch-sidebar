@@ -24,12 +24,12 @@ type Item = {
 };
 
 type DraggableTagProps = {
-  tag: Item;
+  tag: Channel;
 };
 
 const DraggableTag: FC<DraggableTagProps> = (props) => {
   const { tag } = props;
-  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tag.id });
+  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tag.position });
 
   const commonStyle = {
     cursor: 'move',
@@ -46,7 +46,12 @@ const DraggableTag: FC<DraggableTagProps> = (props) => {
 
   return (
     <div style={style} ref={setNodeRef} {...listeners}>
-      {tag.text}
+      <Nav.Item eventKey={tag.position} style={{ borderColor: 'red'}} as="div">
+        <div className='grid-row-testing'>
+          <img src={tag.channel_profile_image} style={{width: 50, height: 50}} />
+          <p>{tag.channel_name}</p>
+        </div>
+      </Nav.Item>
     </div>
   );
 };
@@ -202,9 +207,9 @@ function App() {
     if (!over) return;
 
     if (active.id !== over.id) {
-      setItems((data) => {
-        const oldIndex = data.findIndex((item) => item.id === active.id);
-        const newIndex = data.findIndex((item) => item.id === over.id);
+      setSideBarList((data) => {
+        const oldIndex = data.findIndex((item) => item.position === active.id);
+        const newIndex = data.findIndex((item) => item.position === over.id);
 
         return arrayMove(data, oldIndex, newIndex);
       });
@@ -234,11 +239,11 @@ function App() {
             <Sidenav.Body>
               <Nav>
                 <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-                  <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                    {items.map((item) => (
+                  <SortableContext items={sideBarList} strategy={verticalListSortingStrategy}>
+                    {sideBarList.map((item) => (
                       <DraggableTag tag={item} key={item.id} />
                     ))}
-                    {
+                    {/* {
                       sideBarList.map((item: any) => (
                         <Nav.Item eventKey={item.position} style={{ borderColor: 'red'}} as="div">
                           <div className='grid-row-testing'>
@@ -247,7 +252,7 @@ function App() {
                           </div>
                         </Nav.Item>
                       ))
-                    }
+                    } */}
                   </SortableContext>
                 </DndContext>
               </Nav>
