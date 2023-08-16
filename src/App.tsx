@@ -1,9 +1,9 @@
-// import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import type { FC } from 'react';
 
+import SideBar from "./components/Sidebar"
 
 import { Sidenav, Nav, Toggle } from 'rsuite';
 
@@ -23,11 +23,11 @@ type Item = {
   text: string;
 };
 
-type DraggableTagProps = {
+type DraggableNavItemProps = {
   tag: Channel;
 };
 
-const DraggableTag: FC<DraggableTagProps> = (props) => {
+const DraggableNavItem: FC<DraggableNavItemProps> = (props) => {
   const { tag } = props;
   const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tag.position });
 
@@ -61,21 +61,6 @@ function App() {
   const [listOfFollowedChannels, setListOfFollowedChannels] = useState([] as any);
   const [sideBarList, setSideBarList] = useState([] as any);
   const [expanded, setExpanded] = useState(true);
-  const [activeDrags, setActiveDrags] = useState(0);
-  const [items, setItems] = useState<Item[]>([
-      {
-        id: 1,
-        text: 'Tag 1',
-      },
-      {
-        id: 2,
-        text: 'Tag 2',
-      },
-      {
-        id: 3,
-        text: 'Tag 3',
-      },
-    ]);
 
   useEffect(() => {
     const initializeApi = async () => {
@@ -198,77 +183,56 @@ function App() {
 
     initializeApi();
   }, []);
-  
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  function updateItemPosition(active, over){
+    setSideBarList((data) => {
+      const oldIndex = data.findIndex((item) => item.position === active.id);
+      const newIndex = data.findIndex((item) => item.position === over.id);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    if (active.id !== over.id) {
-      setSideBarList((data) => {
-        const oldIndex = data.findIndex((item) => item.position === active.id);
-        const newIndex = data.findIndex((item) => item.position === over.id);
-
-        return arrayMove(data, oldIndex, newIndex);
-      });
-    }
-  };
+      return arrayMove(data, oldIndex, newIndex);
+    });
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-      <a href="https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls">Connect with Twitch</a>
-       Access token:  {authInfo.access_token}
-       <br></br>
-       Active Drags: {activeDrags}
-      </header>
-      <div className='main-content'>
-        <div style={{ width: '20vh', height: '70vh', overflowY: 'scroll'}}>
-          <div style={{width: '100%'}}>
-            <Toggle
-                onChange={setExpanded}
-                checked={expanded}
-                checkedChildren="Expand"
-                unCheckedChildren="Collapse"
-            />
-          </div>
-          <hr />
-          <Sidenav expanded={expanded} defaultOpenKeys={['3', '4']}>
-            <Sidenav.Body>
-              <Nav>
-                <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-                  <SortableContext items={sideBarList} strategy={verticalListSortingStrategy}>
-                    {sideBarList.map((item) => (
-                      <DraggableTag tag={item} key={item.id} />
-                    ))}
-                    {/* {
-                      sideBarList.map((item: any) => (
-                        <Nav.Item eventKey={item.position} style={{ borderColor: 'red'}} as="div">
-                          <div className='grid-row-testing'>
-                            <img src={item.channel_profile_image} style={{width: 50, height: 50}} />
-                            <p>{item.channel_name}</p>
-                          </div>
-                        </Nav.Item>
-                      ))
-                    } */}
-                  </SortableContext>
-                </DndContext>
-              </Nav>
-            </Sidenav.Body>
-            <Sidenav.Toggle expanded={expanded} onToggle={expanded => setExpanded(expanded)} />
-          </Sidenav>
-        </div>
-        <div>
-          <ul>
-            {
-              listOfFollowedChannels.map((i: any) => (<li key={i.to_id}>{i.to_name}</li>))
-            }
-          </ul>
-        </div>
+    <div className="wrapper">
+      {/* <div className="sidebar"> */}
+      <SideBar sideBarList={sideBarList} updateItemPosition={updateItemPosition} />
+      {/* </div> */}
+      <div className="main">
+        Main content
       </div>
     </div>
+    // <div className="container">
+    //   <div className="row">
+    //     <div className="col-xs-12">
+    //       <a href="https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls">Connect with Twitch</a>
+    //       Access token:  {authInfo.access_token}
+    //       <hr />
+    //     </div>
+    //     <div id="sidebar">
+    //       <SideBar sideBarList={sideBarList} updateItemPosition={updateItemPosition} />
+    //     </div>
+    //     <div className="main">
+    //       <p>This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would
+    //         be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data
+    //         gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main
+    //         body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling
+    //         infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on
+    //         scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the
+    //         user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as
+    //         more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This
+    //         is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would
+    //         be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data
+    //         gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll.</p>
+    //       <p>This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would
+    //         be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data
+    //         gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main
+    //         body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling
+    //         infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on
+    //         scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll.</p>
+    //     </div>
+    //   </div>
+    // </div>
   );
 }
 
