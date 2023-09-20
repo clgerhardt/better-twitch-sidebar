@@ -13,7 +13,7 @@
 
 .rs-sidenav-collapse-out .grid-row-testing img {
   margin-left: 10%;
-  width: 45px !important;
+  width: 60px !important;
   height: 45px !important;
 }
 
@@ -26,22 +26,46 @@ img {
 }
 
 .main {
-  width: 82%;
-  height: 150vh;
+  width: 100vh;
+  height: 160vh;
   background-color: #0f131a;
 }
 
 .sidebar {
-  width: 18%;
+  width: 24vh;
   height: 100vh;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   background-color: #3c3f43 !important;
-  overflow-y: scroll;
 }
 
 body {
   background-color: #ccc;
   font-family: sans-serif;
+}
+
+.simple-react-bar {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.group-item {
+  width: 18vh;
+  height: 10vh;
+  position: -webkit-sticky;
+  position: sticky;
+}
+
+.simple-react-bar-group {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.simple-react-bar .simplebar-placeholder {
+  height: auto !important;
+}
+
+.simple-react-bar-group .simplebar-placeholder {
+  height: auto !important;
 }

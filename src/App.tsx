@@ -2,59 +2,25 @@ import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import type { FC } from 'react';
+import SimpleBarReact from "simplebar-react";
+import 'simplebar-react/dist/simplebar.min.css';
 
-import SideBar from "./components/Sidebar"
-
-import { Sidenav, Nav, Toggle } from 'rsuite';
-
-import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core/dist/types/index';
-import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { Channel } from "./models/Channel";
 import { Group } from "./models/Group";
+
+import { MultipleContainers } from './components/MultipleContainers';
+import { OGMultipleContainers } from './components/OGMultipleContainers';
 
 let authApi = axios.create({
   baseURL: 'https://id.twitch.tv/oauth2/token'
 })
 
-type Item = {
-  id: number;
-  text: string;
-};
+let implicitAuthApi = axios.create({
+  baseURL: 'https://id.twitch.tv/oauth2/authorize?response_type=token'
+});
 
-type DraggableNavItemProps = {
-  tag: Channel;
-};
-
-const DraggableNavItem: FC<DraggableNavItemProps> = (props) => {
-  const { tag } = props;
-  const { listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tag.position });
-
-  const commonStyle = {
-    cursor: 'move',
-    transition: 'unset', // Prevent element from shaking after drag
-  };
-
-  const style = transform
-    ? {
-        ...commonStyle,
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        transition: isDragging ? 'unset' : transition, // Improve performance/visual effect when dragging
-      }
-    : commonStyle;
-
-  return (
-    <div style={style} ref={setNodeRef} {...listeners}>
-      <Nav.Item eventKey={tag.position} style={{ borderColor: 'red'}} as="div">
-        <div className='grid-row-testing'>
-          <img src={tag.channel_profile_image} style={{width: 50, height: 50}} />
-          <p>{tag.channel_name}</p>
-        </div>
-      </Nav.Item>
-    </div>
-  );
-};
 
 function App() {
   const [authInfo, setAuthInfo] = useState([] as any);
@@ -64,21 +30,39 @@ function App() {
 
   useEffect(() => {
     const initializeApi = async () => {
-      let result = await authApi.post('https://id.twitch.tv/oauth2/token', {
-        'client_id': process.env.REACT_APP_TWITCH_CLIENT_ID,
-        'client_secret': process.env.REACT_APP_TWITCH_CLIENT_SECRET,
-        'grant_type': 'client_credentials'
-      }).then(item => {
-        return item;
-      });
-      setAuthInfo(result.data);
+      // console.log(window.location.href.split("access_token=")[1].split("&")[0])
+
+    //  let testResult = await implicitAuthApi.post('https://id.twitch.tv/oauth2/authorize?response_type=token', {
+    //     'client_id': process.env.REACT_APP_TWITCH_CLIENT_ID,
+    //     'redirect_uri': 'http://localhost:3000',
+    //     'scop': 'channel%3Amanage%3Apolls+channel%3Aread%3Apolls',
+    //     'state': 'c3ab8aa609ea11e793ae92361f002671'
+    //   });
+    //   console.log(testResult)
+      // let result = await authApi.post('https://id.twitch.tv/oauth2/token', {
+      //   'client_id': process.env.REACT_APP_TWITCH_CLIENT_ID,
+      //   'client_secret': process.env.REACT_APP_TWITCH_CLIENT_SECRET,
+      //   'grant_type': 'client_credentials'
+      // }).then(item => {
+      //   return item;
+      // });
+
+      // console.log(result.data)
+      // setAuthInfo(result.data);
+
+      let access_token = window.location.href.split("access_token=");
+      console.log(access_token)
+
+      let bearer_token = (access_token.length > 1 ? access_token[1].split("&")[0] : '');
 
       let api = axios.create({
         headers: {
-          'Authorization': 'Bearer ' + result.data.access_token,
+          'Authorization': 'Bearer ' + bearer_token,
           'Client-ID': process.env.REACT_APP_TWITCH_CLIENT_ID || ''
         }
       })
+
+      if (!bearer_token) return;
 
       // get list of channels the signed in user follows
       let listOfFollowedChannels: any = [];
@@ -104,10 +88,10 @@ function App() {
       let maxAmountDefault = 100;
       listOfFollowedChannels.forEach((channel: any, index: any) => {
         if(maxAmountDefault == 100) {
-          getUserDataUrlToBeAppendedTo += baseGetUserDataUrl + `id=${channel.to_id}`;
+          getUserDataUrlToBeAppendedTo += baseGetUserDataUrl + `id=${channel.broadcaster_id}`;
           maxAmountDefault -=1;
         } else {
-          getUserDataUrlToBeAppendedTo += `&id=${channel.to_id}`;
+          getUserDataUrlToBeAppendedTo += `&id=${channel.broadcaster_id}`;
           maxAmountDefault -=1;
         }
 
@@ -151,7 +135,7 @@ function App() {
     }
 
     let getFollowedChannels = async (api: any, firstCall = false, pagination = "") => {
-      let baseHelixUrl = `https://api.twitch.tv/helix/users/follows?from_id=${process.env.REACT_APP_KATICISM_USER_ID}`;
+      let baseHelixUrl = `https://api.twitch.tv/helix/channels/followed?user_id=${process.env.REACT_APP_KATICISM_USER_ID}`;
       if(firstCall) {
        return await api.get(baseHelixUrl).then(
         (item: any) => {
@@ -170,69 +154,54 @@ function App() {
 
     let initializeSideNavBar = (listOfFollowedChannels: Array<any>, userDataPerChannel: any) => {
       let sideBarList: Array<Channel | Group> = [];
+      let tarkovGroup = new Group();
+      tarkovGroup.channels = new Array();
+      tarkovGroup.position = 1;
+      tarkovGroup.index = 1;
+      let ungrouped = new Group();
+      ungrouped.channels = new Array();
+      ungrouped.position = 0;
+      ungrouped.index = 0;
+      ungrouped.group_name = 'Ungrouped Channels';
+      tarkovGroup.group_name = 'Tarkov';
+      let eftchannels = ['AquaFPS', 'Gingy', 'StankRat_', 'Tigz', 'HyperRatTV', 'Dylhero', 'BattlestateGames', 'LVNDMARK', 'Anton', 'QuattroAce', 'Pestily', 'JesseKazam']
       listOfFollowedChannels.forEach((channel: any, index: any) => {
-        let newChannel: Channel = {};
-        newChannel.channel_id = channel.to_id;
-        newChannel.channel_name = channel.to_name;
+        let newChannel: Channel = {index};
+        newChannel.id = index + 1;
+        newChannel.channel_id = channel.broadcaster_id;
+        newChannel.channel_name = channel.broadcaster_name;
         newChannel.position = index + 1;
-        newChannel.channel_profile_image = userDataPerChannel.find((user: any) => user.id === channel.to_id).profile_image_url || '';
-        sideBarList.push(newChannel);
+        newChannel.movable = true;
+        newChannel.channel_profile_image = userDataPerChannel.find((user: any) => user.id === channel.broadcaster_id).profile_image_url || '';
+        if(eftchannels.includes(newChannel.channel_name)) {
+          tarkovGroup?.channels?.push(newChannel)
+        } else {
+          ungrouped?.channels?.push(newChannel);
+        }
       })
+      sideBarList.push(ungrouped);
+      sideBarList.push(tarkovGroup);
+      console.log(sideBarList);
       return sideBarList;
     }
 
     initializeApi();
   }, []);
 
-  function updateItemPosition(active, over){
-    setSideBarList((data) => {
-      const oldIndex = data.findIndex((item) => item.position === active.id);
-      const newIndex = data.findIndex((item) => item.position === over.id);
-
-      return arrayMove(data, oldIndex, newIndex);
-    });
-  }
-
   return (
     <div className="wrapper">
-      {/* <div className="sidebar"> */}
-      <SideBar sideBarList={sideBarList} updateItemPosition={updateItemPosition} />
-      {/* </div> */}
+      <div className='sidebar'>
+        <SimpleBarReact className='simple-react-bar'>
+          { sideBarList.length > 0 && <MultipleContainers itemCount={sideBarList.length} followerslist={sideBarList} vertical trashable={false} containerStyle={{ height: '44vh'}} scrollable/> }
+        </SimpleBarReact>
+      </div>
       <div className="main">
         Main content
+        <br></br>
+        <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows">Connect with Twitch</a>
+         {/* <OGMultipleContainers itemCount={10} vertical trashable={false} containerStyle={{ height: '44vh'}} scrollable/> */}
       </div>
     </div>
-    // <div className="container">
-    //   <div className="row">
-    //     <div className="col-xs-12">
-    //       <a href="https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls">Connect with Twitch</a>
-    //       Access token:  {authInfo.access_token}
-    //       <hr />
-    //     </div>
-    //     <div id="sidebar">
-    //       <SideBar sideBarList={sideBarList} updateItemPosition={updateItemPosition} />
-    //     </div>
-    //     <div className="main">
-    //       <p>This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would
-    //         be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data
-    //         gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main
-    //         body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling
-    //         infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on
-    //         scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the
-    //         user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as
-    //         more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This
-    //         is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would
-    //         be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data
-    //         gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll.</p>
-    //       <p>This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would
-    //         be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data
-    //         gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main
-    //         body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling
-    //         infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on
-    //         scroll. This is the main body which the user would be scrolling infinitely as more data gets loaded on scroll.</p>
-    //     </div>
-    //   </div>
-    // </div>
   );
 }
 

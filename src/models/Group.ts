@@ -1,6 +1,8 @@
 import { Channel } from "./Channel"
 
 export class Group {
-    position?: Number
+    position?: number
     channels?: Array<Channel>
+    group_name?: string
+    index?: number
 }
