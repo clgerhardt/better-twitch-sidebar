@@ -18,7 +18,7 @@ import {
 // import announcements from "./announcements";
 import SortableContainer, { Container } from "./container";
 import SortableItem, { Item } from "./sortableItem";
-import { Group } from "../models/Group";
+// import { Group } from "../models/Group";
 
 const wrapperStyle = {
   background: "#e9e9e9",
@@ -43,49 +43,52 @@ const Sidebar = ({ followersList }) => {
 
   return (
     <div style={{overflowY: 'auto', height: '100%'}}>
-      <div>
-        <button onClick={addItem()}>Add Item</button>
-        <button onClick={addItem(true)}>Add Column</button>
-        <button onClick={addItem(true, true)}>Add Row</button>
-      </div>
-      <DndContext
-        // announcements={announcements}
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-        strategy={closestCorners}
-      >
-        <SortableContext
-          
-          items={getItemIds()}
-          strategy={verticalListSortingStrategy}
+        <div>
+          <button onClick={addItem()}>Add Item</button>
+          <button onClick={addItem(true)}>Add Column</button>
+          <button onClick={addItem(true, true)}>Add Row</button>
+        </div>
+        
+        <DndContext
+          // announcements={announcements}
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          strategy={closestCorners}
         >
-          <div style={wrapperStyle}>
-            {getItems().map((item) => {
-              if (item.container) {
-                return (
-                  <SortableContainer
-                    key={item.id}
-                    id={item.id}
-                    getItems={getItems}
-                    row={item.row}
-                    group={item}
-                  />
-                );
-              }
+          <SortableContext
+            items={getItemIds()}
+            strategy={verticalListSortingStrategy}
+          >
+            {/* <SimpleBarReact> */}
+              <div style={wrapperStyle}>
+                {getItems().map((item) => {
+                  if (item.container) {
+                    return (
+                      
+                        <SortableContainer
+                          key={item.id}
+                          id={item.id}
+                          getItems={getItems}
+                          row={item.row}
+                          group={item}
+                        />
+                    );
+                  }
 
-              return (
-                <SortableItem key={item.id} id={item.id}>
-                  <Item id={item.id} item={item} />
-                </SortableItem>
-              );
-            })}
-          </div>
-        </SortableContext>
-        <DragOverlay>{getDragOverlay()}</DragOverlay>
-      </DndContext>
-    </div>
+                  return (
+                    <SortableItem key={item.id} id={item.id}>
+                      <Item id={item.id} item={item} />
+                    </SortableItem>
+                  );
+                })}
+              </div>
+              {/* </SimpleBarReact> */}
+          </SortableContext>
+          <DragOverlay>{getDragOverlay()}</DragOverlay>
+        </DndContext>
+      </div>
   );
 
   function addItem(container, row) {

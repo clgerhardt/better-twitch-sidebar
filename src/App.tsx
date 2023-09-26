@@ -197,7 +197,9 @@ function App() {
   return (
     <div className="wrapper">
       <div className='sidebar'>
+      <SimpleBarReact className='simple-react-bar'>
         {sideBarList.length > 0 && <Sidebar followersList={sideBarList}></Sidebar>}
+      </SimpleBarReact> 
         {/* <SimpleBarReact className='simple-react-bar'>
           { sideBarList.length > 0 && <ListTest sideBarList={sideBarList}/> }
         </SimpleBarReact> */}

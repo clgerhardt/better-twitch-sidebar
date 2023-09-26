@@ -7,6 +7,7 @@ import {
 } from "@dnd-kit/sortable";
 
 import SortableItem, {Item} from "./sortableItem";
+import SimpleBarReact from "simplebar-react";
 
 const containerStyle = {
   background: "#dadada",
@@ -16,24 +17,25 @@ const containerStyle = {
   border: "1px solid #ababab",
   display: "flex",
   alignSelf: "stretch",
-  height: '50vh',
-  overflowY: 'scroll'
+  height: '50vh'
 };
 
 export const Container = React.forwardRef((props, ref) => {
   const { children, row, style = {} } = props;
 
   return (
-    <div
-      ref={ref}
-      style={{
-        ...containerStyle,
-        ...style,
-        flexDirection: row ? "row" : "column"
-      }}
-    >
-      {children}
-    </div>
+      <div
+        ref={ref}
+        style={{
+          ...containerStyle,
+          ...style,
+          flexDirection: row ? "row" : "column"
+        }}
+      >
+        <SimpleBarReact className='simple-react-bar'>
+          {children}
+        </SimpleBarReact>
+      </div>
   );
 });
 

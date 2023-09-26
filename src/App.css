@@ -38,6 +38,7 @@ img {
   position: sticky;
   top: 0;
   background-color: #3c3f43 !important;
+  /* overflow-y: hidden; */
 }
 
 body {
