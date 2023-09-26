@@ -1,9 +1,9 @@
 export class Channel {
-    position?: string
+    position?: number
     channel_id?: number
     channel_name?: string
     channel_profile_image?: string
-    id?: string
-    movable?: boolean
-    index: number
+    id?: number
+    index?: number
+    parent?: number
 }

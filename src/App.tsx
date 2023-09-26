@@ -1,17 +1,16 @@
 import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import type { FC } from 'react';
 import SimpleBarReact from "simplebar-react";
 import 'simplebar-react/dist/simplebar.min.css';
-
-import { arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { Channel } from "./models/Channel";
 import { Group } from "./models/Group";
 
-import { MultipleContainers } from './components/MultipleContainers';
-import { OGMultipleContainers } from './components/OGMultipleContainers';
+// import { MultipleContainers } from './components/MultipleContainers';
+
+import ListTest from './components/ListTest';
+import Sidebar from './components/sidebar';
 
 let authApi = axios.create({
   baseURL: 'https://id.twitch.tv/oauth2/token'
@@ -27,7 +26,6 @@ function App() {
   const [listOfFollowedChannels, setListOfFollowedChannels] = useState([] as any);
   const [sideBarList, setSideBarList] = useState([] as any);
   const [expanded, setExpanded] = useState(true);
-
   useEffect(() => {
     const initializeApi = async () => {
       // console.log(window.location.href.split("access_token=")[1].split("&")[0])
@@ -51,7 +49,7 @@ function App() {
       // setAuthInfo(result.data);
 
       let access_token = window.location.href.split("access_token=");
-      console.log(access_token)
+      // console.log(access_token)
 
       let bearer_token = (access_token.length > 1 ? access_token[1].split("&")[0] : '');
 
@@ -156,31 +154,39 @@ function App() {
       let sideBarList: Array<Channel | Group> = [];
       let tarkovGroup = new Group();
       tarkovGroup.channels = new Array();
-      tarkovGroup.position = 1;
-      tarkovGroup.index = 1;
+      tarkovGroup.position = 2;
+      tarkovGroup.index = 2;
+      tarkovGroup.id = 2;
+      tarkovGroup.container = true;
       let ungrouped = new Group();
       ungrouped.channels = new Array();
-      ungrouped.position = 0;
-      ungrouped.index = 0;
+      ungrouped.position = 1;
+      ungrouped.index = 1;
+      ungrouped.id = 1;
       ungrouped.group_name = 'Ungrouped Channels';
+      ungrouped.container = true;
       tarkovGroup.group_name = 'Tarkov';
       let eftchannels = ['AquaFPS', 'Gingy', 'StankRat_', 'Tigz', 'HyperRatTV', 'Dylhero', 'BattlestateGames', 'LVNDMARK', 'Anton', 'QuattroAce', 'Pestily', 'JesseKazam']
-      listOfFollowedChannels.forEach((channel: any, index: any) => {
-        let newChannel: Channel = {index};
-        newChannel.id = index + 1;
-        newChannel.channel_id = channel.broadcaster_id;
-        newChannel.channel_name = channel.broadcaster_name;
-        newChannel.position = index + 1;
-        newChannel.movable = true;
-        newChannel.channel_profile_image = userDataPerChannel.find((user: any) => user.id === channel.broadcaster_id).profile_image_url || '';
-        if(eftchannels.includes(newChannel.channel_name)) {
-          tarkovGroup?.channels?.push(newChannel)
-        } else {
-          ungrouped?.channels?.push(newChannel);
-        }
-      })
       sideBarList.push(ungrouped);
       sideBarList.push(tarkovGroup);
+      listOfFollowedChannels.forEach((channel: any, index: any) => {
+        let newChannel: Channel = {};
+        newChannel.channel_id = channel.broadcaster_id;
+        newChannel.channel_name = channel.broadcaster_name;
+        newChannel.channel_profile_image = userDataPerChannel.find((user: any) => user.id === channel.broadcaster_id).profile_image_url || '';
+        if(eftchannels.includes(newChannel.channel_name)) {
+          newChannel.id = index + 3;
+          newChannel.position = index + 3;
+          newChannel.index = index + 3;
+          newChannel.parent = 2;
+        } else {
+          newChannel.id = index + 3;
+          newChannel.position = index + 3;
+          newChannel.index = index + 3;
+          newChannel.parent = 1;
+        }
+        sideBarList.push(newChannel);
+      })
       console.log(sideBarList);
       return sideBarList;
     }
@@ -191,15 +197,22 @@ function App() {
   return (
     <div className="wrapper">
       <div className='sidebar'>
-        <SimpleBarReact className='simple-react-bar'>
+        {sideBarList.length > 0 && <Sidebar followersList={sideBarList}></Sidebar>}
+        {/* <SimpleBarReact className='simple-react-bar'>
+          { sideBarList.length > 0 && <ListTest sideBarList={sideBarList}/> }
+        </SimpleBarReact> */}
+        
+        {/* <SimpleBarReact className='simple-react-bar'>
           { sideBarList.length > 0 && <MultipleContainers itemCount={sideBarList.length} followerslist={sideBarList} vertical trashable={false} containerStyle={{ height: '44vh'}} scrollable/> }
-        </SimpleBarReact>
+        </SimpleBarReact> */}
       </div>
       <div className="main">
         Main content
         <br></br>
         <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows">Connect with Twitch</a>
          {/* <OGMultipleContainers itemCount={10} vertical trashable={false} containerStyle={{ height: '44vh'}} scrollable/> */}
+        {/* {sideBarList.length > 0 && <Sidebar followersList={sideBarList}></Sidebar>} */}
+        
       </div>
     </div>
   );

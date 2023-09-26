@@ -5,4 +5,6 @@ export class Group {
     channels?: Array<Channel>
     group_name?: string
     index?: number
+    container: boolean
+    id?: number
 }
