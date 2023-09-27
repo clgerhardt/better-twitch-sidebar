@@ -11,13 +11,13 @@ import SimpleBarReact from "simplebar-react";
 
 const containerStyle = {
   background: "#dadada",
-  padding: "20px 10px 25px",
+  padding: "10px 10px 10px",
   flex: 1,
   borderRadius: 8,
   border: "1px solid #ababab",
   display: "flex",
   alignSelf: "stretch",
-  height: '50vh'
+  height: '35vh'
 };
 
 export const Container = React.forwardRef((props, ref) => {
@@ -40,7 +40,7 @@ export const Container = React.forwardRef((props, ref) => {
 });
 
 export default function SortableContainer(props) {
-  const { getItems, id, row, style = { margin: "20px 15px" }, group } = props;
+  const { getItems, id, row, style = { margin: "1px 1px" }, group } = props;
   const items = getItems(id);
   const itemIds = items.map((item) => item.id);
 

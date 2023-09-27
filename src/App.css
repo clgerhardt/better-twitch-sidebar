@@ -25,19 +25,19 @@ img {
   display: flex;
 }
 
-.main {
+/* .main {
   width: 100vh;
   height: 160vh;
   background-color: #0f131a;
-}
+} */
 
 .sidebar {
-  width: 24vh;
+  width: 240px;
   height: 100vh;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
-  background-color: #3c3f43 !important;
+  background-color: #1F1F23 !important;
   /* overflow-y: hidden; */
 }
 

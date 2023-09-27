@@ -10,12 +10,17 @@ export function Item(props) {
     alignItems: "center",
     justifyContent: "center",
     border: "2px solid #9a9a9a",
-    margin: "10px",
+    margin: "5px",
     background: "white",
     borderRadius: 8
   };
-  // <img src={item.channel_profile_image} alt="" style={{width: 45, height: 45}}/> 
-  return <div style={style}> <img src={item.channel_profile_image} alt="" style={{width: 45, height: 45}}/> - {item.channel_name}</div>;
+  return (
+    <div style={style}> 
+      <img src={item.channel_profile_image} alt="" style={{width: 30, height: 30}}/> 
+      {item.channel_name}
+    
+    </div>
+  )
 }
 
 export default function SortableItem(props) {

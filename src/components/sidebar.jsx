@@ -21,8 +21,8 @@ import SortableItem, { Item } from "./sortableItem";
 // import { Group } from "../models/Group";
 
 const wrapperStyle = {
-  background: "#e9e9e9",
-  padding: "10px 10px",
+  background: "#1F1F23",
+  padding: "5px",
   borderRadius: 8,
   margin: 5
 };
