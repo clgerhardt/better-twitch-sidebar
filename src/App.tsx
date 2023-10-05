@@ -2,11 +2,9 @@ import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import SimpleBarReact from "simplebar-react";
-import 'simplebar-react/dist/simplebar.min.css';
 
 import { Channel } from "./models/Channel";
 import { Group } from "./models/Group";
-
 // import { MultipleContainers } from './components/MultipleContainers';
 
 import ListTest from './components/ListTest';
@@ -197,24 +195,15 @@ function App() {
   return (
     <div className="wrapper">
       <div className='sidebar'>
-      <SimpleBarReact className='simple-react-bar'>
-        {sideBarList.length > 0 && <Sidebar followersList={sideBarList}></Sidebar>}
-      </SimpleBarReact> 
-        {/* <SimpleBarReact className='simple-react-bar'>
-          { sideBarList.length > 0 && <ListTest sideBarList={sideBarList}/> }
-        </SimpleBarReact> */}
-        
-        {/* <SimpleBarReact className='simple-react-bar'>
-          { sideBarList.length > 0 && <MultipleContainers itemCount={sideBarList.length} followerslist={sideBarList} vertical trashable={false} containerStyle={{ height: '44vh'}} scrollable/> }
-        </SimpleBarReact> */}
+        {/* For You <button style={{width: '35px', background: '#1F1F23'}}><svg width="100%" height="100%" version="1.1" viewBox="0 0 20 20" x="0px" y="0px" aria-hidden="true" focusable="false" className='svg'><g><path d="M16 16V4h2v12h-2zM6 9l2.501-2.5-1.5-1.5-5 5 5 5 1.5-1.5-2.5-2.5h8V9H6z"></path></g></svg></button> */}
+        <SimpleBarReact className='simple-react-bar'>
+          {sideBarList.length > 0 && <Sidebar followersList={sideBarList}></Sidebar>}
+        </SimpleBarReact> 
       </div>
       <div className="main">
         Main content
         <br></br>
-        <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows">Connect with Twitch</a>
-         {/* <OGMultipleContainers itemCount={10} vertical trashable={false} containerStyle={{ height: '44vh'}} scrollable/> */}
-        {/* {sideBarList.length > 0 && <Sidebar followersList={sideBarList}></Sidebar>} */}
-        
+        <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=h86j4i63hwg0vfwn97lkxr3k0wjqz9&force_verify=true&redirect_uri=http://localhost:3000&scope=user%3Aread%3Afollows">Connect with Twitch</a>        
       </div>
     </div>
   );

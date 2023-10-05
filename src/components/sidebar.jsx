@@ -1,8 +1,14 @@
 import React, { useState } from "react";
+import { IconButton } from 'rsuite';
+import { Icon } from '@rsuite/icons';
+import ExpandOutlineIcon from '@rsuite/icons/ExpandOutline';
+import { Grid, Row, Col } from 'rsuite';
+
 import {
   DndContext,
   DragOverlay,
   closestCorners,
+  closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -22,9 +28,9 @@ import SortableItem, { Item } from "./sortableItem";
 
 const wrapperStyle = {
   background: "#1F1F23",
-  padding: "5px",
+  padding: "10px",
   borderRadius: 8,
-  margin: 5
+  margin: '5px'
 };
 
 const Sidebar = ({ followersList }) => {
@@ -33,6 +39,7 @@ const Sidebar = ({ followersList }) => {
     items: followersList
   });
   const [activeId, setActiveId] = useState();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -41,21 +48,33 @@ const Sidebar = ({ followersList }) => {
     })
   );
 
+  const svgCloseIcon = React.forwardRef((props, ref) => (
+    <svg {...props} version="1.1" viewBox="0 0 20 20" x="0px" y="0px" aria-hidden="true" focusable="false" ref={ref}><g><path d="M16 16V4h2v12h-2zM6 9l2.501-2.5-1.5-1.5-5 5 5 5 1.5-1.5-2.5-2.5h8V9H6z"></path></g></svg>
+  ));
+  const svgOpenIcon = React.forwardRef((props, ref) => (
+    <svg {...props} version="1.1" viewBox="0 0 20 20" x="0px" y="0px" aria-hidden="true" focusable="false" ref={ref}><g><path d="M4 16V4H2v12h2zM13 15l-1.5-1.5L14 11H6V9h8l-2.5-2.5L13 5l5 5-5 5z"></path></g></svg>
+  ));
+
+  
   return (
     <div style={{overflowY: 'auto', height: '100%'}}>
-        <div>
-          <button onClick={addItem()}>Add Item</button>
-          <button onClick={addItem(true)}>Add Column</button>
-          <button onClick={addItem(true, true)}>Add Row</button>
-        </div>
-        
+      <Grid fluid style={{marginLeft: '5px', marginTop: '5px', paddingLeft: '10px', color: 'white'}}>
+        <Row className="show-grid">
+          <Col xs={40}>
+            {/* xs={24} sm={24} md={8} */}
+            <h4>For You</h4>
+          </Col>
+          <Col xs={5} xsOffset={8}>
+            <IconButton  onClick={() => {setIsCollapsed(!isCollapsed)}} icon={<Icon as={isCollapsed ? svgCloseIcon : svgOpenIcon}/>}></IconButton>
+          </Col>
+        </Row>
+        </Grid>
         <DndContext
           // announcements={announcements}
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
-          strategy={closestCorners}
         >
           <SortableContext
             items={getItemIds()}
@@ -88,6 +107,10 @@ const Sidebar = ({ followersList }) => {
           </SortableContext>
           <DragOverlay>{getDragOverlay()}</DragOverlay>
         </DndContext>
+
+        <div style={{textAlign: "center"}}>
+          <IconButton onClick={addItem(true)} style={{width: "5rem", height: "5rem"}} size="lg" icon={<ExpandOutlineIcon/>}></IconButton>
+        </div>
       </div>
   );
 

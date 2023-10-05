@@ -40,7 +40,7 @@ export const Container = React.forwardRef((props, ref) => {
 });
 
 export default function SortableContainer(props) {
-  const { getItems, id, row, style = { margin: "1px 1px" }, group } = props;
+  const { getItems, id, row, style = { margin: "1px 1px 10px" }, group } = props;
   const items = getItems(id);
   const itemIds = items.map((item) => item.id);
 
@@ -66,7 +66,11 @@ export default function SortableContainer(props) {
           }
         >
           {/* TODO: add group name here if instance of group */}
-          {group.group_name}
+          { group && group.group_name &&
+            <p style={{color: 'white'}}>
+              {group.group_name}
+            </p>
+          }
           {items.map((item) => {
             let child = <Item id={item.id} item={item} />;
 

@@ -10,7 +10,8 @@ export function Item(props) {
     alignItems: "center",
     justifyContent: "center",
     border: "2px solid #9a9a9a",
-    margin: "5px",
+    margin: "3px",
+    padding: '2px',
     background: "white",
     borderRadius: 8
   };
